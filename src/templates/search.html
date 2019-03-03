@@ -20,9 +20,9 @@
     <h1>search coming soon</h1>
   </header>
   <main>
-    <form id="search-form" class="hide">
+    <form method="POST" action='/search' id="search-form">
       <label for="search">Search for a company</label>
-      <input type="text" name="company" id="input-search" placeholder="Enter a Company here">
+      <input type="text" name="symbol" id="input-search" placeholder="Enter a Company here">
       <button type="submit">submit!</button>
     </form>
   </main>
