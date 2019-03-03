@@ -1,6 +1,7 @@
 from flask import render_template, abort, redirect, url_for, request
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from . import app
+from .models import Company, db
 import requests
 import json
 import os
@@ -13,28 +14,33 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/search', methods=['GET', 'POST'])
-def company_search():
+@app.route('/search', methods=['GET'])
+def company_search_form():
     """
     """
-    if request.method == 'GET':
-        return render_template('/search.html')
-      
-    elif request.method == 'POST':
-        companyName = request.form.get('company')
+    return render_template('/search.html')
 
-        url = 'https://api.iextrading.com/1.0/stock/{}}/company'.format(
-            os.environ.get('API_URL'),
-            companyName,
-            os.environ.get('API_KEY'),
-        )
+@app.route('/search', methods=['POST'])
+def company_search_results(): 
+    symbol = request.form.get('symbol') 
 
-        res = requests.get(url)
-        data = json.loads(res.text)
 
-        return redirect(url_for('/portfolio.html'))
+    url = f'https://api.iextrading.com/1.0/stock/{symbol}/company'
 
-        # return render_template('/portfolio.html')
+    response = requests.get(url)
+
+    data = json.loads(response.text)
+
+    company = Company(name=data['companyName'], symbol=['symbol'])
+
+    return response.text  
+
+    db.session.add(company)
+    db.session.commit()
+
+    return redirect(url_for('.portfolio'))
+
+        # Use try/except in future
         # try:
         #     company = Company(name=data['company'],)
         #     db.session.add(company)
@@ -42,6 +48,7 @@ def company_search():
         # except (DBAPIError, IntegrityError):
         #     abort(400)
 
+    
 
 
 
