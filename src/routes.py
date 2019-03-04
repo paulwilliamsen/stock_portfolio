@@ -31,29 +31,24 @@ def company_search_results():
 
     data = json.loads(response.text)
 
-    company = Company(name=data['companyName'], symbol=['symbol'])
-
-    return response.text  
-
-    db.session.add(company)
-    db.session.commit()
-
-    return redirect(url_for('.portfolio'))
-
-        # Use try/except in future
-        # try:
-        #     company = Company(name=data['company'],)
-        #     db.session.add(company)
-        #     db.session.commit()
-        # except (DBAPIError, IntegrityError):
-        #     abort(400)
-
     
 
+    try:
+        company = Company(name=data['companyName'], symbol=data['symbol'])
+        db.session.add(company)
+        db.session.commit()
 
+    except (DBAPIError, IntegrityError):
+        return redirect(url_for('.portfolio'))
+
+    return redirect(url_for('.portfolio'))
+    
 
 @app.route('/portfolio')
 def portfolio():
     """
     """
     return render_template('/portfolio.html')
+
+        
+        
