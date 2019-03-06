@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <h2>Welcome to Your Portfolio</h2>
+  {% for company in companies %}
+    <div class="city">
+      <p>Name: {{ company.name }}</p>
+      <p>Symbol: {{ company.symbol }}</p>
+    </div>
+  {% endfor %}
+</div>
+{% endblock content %}

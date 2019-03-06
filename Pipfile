@@ -9,8 +9,9 @@ requests = "*"
 flask-sqlalchemy = "*"
 "psycopg2-binary" = "*"
 flask-migrate = "*"
+gunicorn = "*"
+flask-wtf = "*"
 python-dotenv = "*"
-pytest = "*"
 
 [dev-packages]
 pytest = "*"
