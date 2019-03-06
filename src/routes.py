@@ -2,10 +2,16 @@ from flask import render_template, abort, redirect, url_for, request, session
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from . import app
 from .forms import CompanyForm, CompanyAddForm
-from .models import Company, db
+from .models import Company, db, Category
 import requests
 import json
 import os
+
+@app.add_template_global
+def get_categories():
+    """
+    """
+    return Category.query.all()
 
 
 @app.route('/')

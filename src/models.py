@@ -17,3 +17,15 @@ class Company(db.Model):
 
     def __repr__(self):
         return '<Company {}-{}>'.format(self.name, self.symbol)
+
+class Portfolio(db.Model):
+    __tablename__ = 'categories'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), index=True)
+
+    company = db.relationship('Company', backref='category', lazy=True)
+
+
+    def __repr__(self):
+        return '<Category {}>'.format(self.name)
