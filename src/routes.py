@@ -1,11 +1,17 @@
-from flask import render_template, abort, redirect, url_for, request, session
+from flask import render_template, abort, redirect, url_for, request, session, flash
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from . import app
-from .forms import CompanyForm, CompanyAddForm
-from .models import Company, db
+from .forms import CompanyForm, CompanyAddForm, PortfolioCreateForm
+from .models import Company, db, Portfolio
 import requests
 import json
 import os
+
+@app.add_template_global
+def get_portfolios():
+    """
+    """
+    return Portfolio.query.all()
 
 
 @app.route('/')
@@ -32,7 +38,7 @@ def company_search():
         data = json.loads(response.text)
         session['name'] = data['companyName']
         session['symbol'] = data['symbol']
-        #might need brackets
+
 
         return redirect(url_for('.company_preview'))
 
@@ -51,17 +57,18 @@ def company_preview():
 
     if form.validate_on_submit():
         try:
-            company = Company(name=form.data['companyName'], symbol=form.data['symbol'])
+            company = Company(name=form.data['name'], portfolio_id=form.data['portfolios'], symbol=form.data['symbol'])
             db.session.add(company)
             db.session.commit()
         except (DBAPIError, IntegrityError):
-            abort(400)
-            return render_template('/.html', form=form)
+            flash('Oops. Something went wrong with your search.')
+            db.session.rollback()
+            return render_template('/company/search.html', form=form)
 
         return redirect(url_for('company/portfolio.html'))
 
     return render_template(
-        '/preview.html',
+        'company/preview.html',
         form=form,
         name=form_context['name'],
         symbol=session['symbol'],
@@ -69,11 +76,24 @@ def company_preview():
 
 
 
-@app.route('/portfolio')
+@app.route('/portfolio', methods=['POST'])
 def portfolio():
     """
     """
-    return render_template('company/portfolio.html')
 
+    form = PortfolioCreateForm()\
+
+    if form.validate_on_submit():
+        try:
+            portfolio = Portfolio(portfolio_name=form.data['name'])
+            db.session.add(portfolio)
+            db.session.commit()
+        except (DBAPIError, IntegrityError):
+            flash('Oops. Something went wrong with your search.')
+            return render_template('company/portfolio.html')
+        return redirect(url_for('.company_search'))
+
+    portfolio = Portfolio.query.all()
+    return render_template('company/portfolio.html', portfolio=portfolio, form=form)
         
-        
+
