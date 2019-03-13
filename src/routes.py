@@ -1,6 +1,7 @@
 from flask import render_template, abort, redirect, url_for, request, session, flash
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from . import app
+from .auth import login_required
 from .forms import CompanyForm, CompanyAddForm, PortfolioCreateForm
 from .models import Company, db, Portfolio
 import requests
@@ -22,6 +23,7 @@ def home():
 
 
 @app.route('/search', methods=['GET', 'POST'])
+@login_required
 def company_search():
     """
     """
@@ -46,6 +48,7 @@ def company_search():
 
 
 @app.route('/preview', methods=['GET', 'POST'])
+@login_required
 def company_preview():
     """
     """
@@ -77,6 +80,7 @@ def company_preview():
 
 
 @app.route('/portfolio', methods=['POST'])
+@login_required
 def portfolio():
     """
     """
