@@ -1,6 +1,7 @@
-from flask import render_template, abort, redirect, url_for, request, session, flash
+from flask import render_template, abort, redirect, url_for, request, session, flash, g
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from . import app
+from .auth import login_required
 from .forms import CompanyForm, CompanyAddForm, PortfolioCreateForm
 from .models import Company, db, Portfolio
 import requests
@@ -22,6 +23,7 @@ def home():
 
 
 @app.route('/search', methods=['GET', 'POST'])
+@login_required
 def company_search():
     """
     """
@@ -46,6 +48,7 @@ def company_search():
 
 
 @app.route('/preview', methods=['GET', 'POST'])
+@login_required
 def company_preview():
     """
     """
@@ -76,16 +79,21 @@ def company_preview():
 
 
 
-@app.route('/portfolio', methods=['POST'])
+@app.route('/portfolio', methods=['GET', 'POST'])
+@login_required
 def portfolio():
     """
     """
 
-    form = PortfolioCreateForm()\
+    form = PortfolioCreateForm()
 
     if form.validate_on_submit():
         try:
-            portfolio = Portfolio(portfolio_name=form.data['name'])
+
+            print('------------------------')
+
+            portfolio = Portfolio(name=form.data['name'], user_id=session ['user_id'])
+
             db.session.add(portfolio)
             db.session.commit()
         except (DBAPIError, IntegrityError):

@@ -1,3 +1,4 @@
+from src.models import City, Category, User
 from src.models import db as _db
 from src import app as _app
 import pytest
@@ -6,13 +7,14 @@ import os
 
 @pytest.fixture()
 def app(request):
-    """Session-wide Testable Flask Application
+    """
     """
     _app.config.from_mapping(
         TESTING=True,
         SECRET_KEY=os.environ.get('SECRET_KEY'),
         SQLALCHEMY_DATABASE_URI=os.getenv('TEST_DATABASE_URL'),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        WTF_CSRF_ENABLED=False,
     )
 
     ctx = _app.app_context()
@@ -27,7 +29,7 @@ def app(request):
 
 @pytest.fixture()
 def db(app, request):
-    """Session-wide Test Database
+    """
     """
     def teardown():
         _db.drop_all()
@@ -39,9 +41,9 @@ def db(app, request):
     return _db
 
 
-@pytest.fixture() #db_session
+@pytest.fixture()
 def session(db, request):
-    """Creates a new database session for testing
+    """
     """
     connection = db.engine.connect()
     transaction = connection.begin()
@@ -58,3 +60,50 @@ def session(db, request):
 
     request.addfinalizer(teardown)
     return session
+
+
+@pytest.fixture()
+def client(app, db, session):
+    """
+    """
+    client = app.test_client()
+    ctx = app.app_context()
+    ctx.push()
+
+    yield client
+
+    ctx.pop()
+
+
+@pytest.fixture()
+def user(session):
+    """
+    """
+    user = User(email='default@example.com', password='secret')
+
+    session.add(user)
+    session.commit()
+    return user
+
+
+@pytest.fixture()
+def authenticated_client(client, user):
+    """
+    """
+    client.post(
+        '/login',
+        data={'email': user.email, 'password': 'secret'},
+        follow_redirects=True,
+    )
+    return client
+
+
+@pytest.fixture()
+def category(session, user):
+    """
+    """
+    category = Category(name='Default', user_id=user.id)
+
+    session.add(category)
+    session.commit()
+    return category

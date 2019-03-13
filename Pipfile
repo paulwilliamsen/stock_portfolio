@@ -12,6 +12,7 @@ flask-migrate = "*"
 gunicorn = "*"
 flask-wtf = "*"
 python-dotenv = "*"
+passlib = "*"
 
 [dev-packages]
 pytest = "*"

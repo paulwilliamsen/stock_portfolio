@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if get_portfolios() %}
 <div class="container">
   <h2>Search for Company</h2>
   <form method="POST" action="{{ url_for(".company_search") }}">
@@ -9,4 +10,10 @@
     <input type="submit" value="Go">
   </form>
 </div>
+{% else %}
+    <div class="container">
+      <h3>Please create a Category <a href="{{ url_for(".portfolio") }}">here</a>
+      </h3>
+    </div>
+{% endif %}
 {% endblock content %}
