@@ -1,4 +1,4 @@
-from flask import render_template, abort, redirect, url_for, request, session, flash
+from flask import render_template, abort, redirect, url_for, request, session, flash, g
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from . import app
 from .auth import login_required
@@ -79,17 +79,21 @@ def company_preview():
 
 
 
-@app.route('/portfolio', methods=['POST'])
+@app.route('/portfolio', methods=['GET', 'POST'])
 @login_required
 def portfolio():
     """
     """
 
-    form = PortfolioCreateForm()\
+    form = PortfolioCreateForm()
 
     if form.validate_on_submit():
         try:
-            portfolio = Portfolio(portfolio_name=form.data['name'])
+
+            print('------------------------')
+
+            portfolio = Portfolio(name=form.data['name'], user_id=session ['user_id'])
+
             db.session.add(portfolio)
             db.session.commit()
         except (DBAPIError, IntegrityError):

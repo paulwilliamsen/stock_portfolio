@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if get_categories() %}
+{% if get_portfolios() %}
 <div class="container">
   <h2>Search for Company</h2>
   <form method="POST" action="{{ url_for(".company_search") }}">

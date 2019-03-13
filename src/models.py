@@ -26,9 +26,10 @@ class Portfolio(db.Model):
     __tablename__ = 'portfolios'
 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.ForeignKey('users.id'), nullable=False)
     name = db.Column(db.String(256), index=True, unique=True)
 
-    company = db.relationship('Company', backref='portfolio', lazy=True)
+    company = db.relationship('Company', backref='portfolios', lazy=True)
 
     date_created = db.Column(db.DateTime, default=dt.now())
 
@@ -44,7 +45,7 @@ class User(db.Model):
     email = db.Column(db.String(256), index=True, nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
 
-    categories = db.relationship('Category', backref='user', lazy=True)
+    users = db.relationship('Portfolio', backref='user', lazy=True)
 
     date_created = db.Column(db.DateTime, default=dt.now())
 
