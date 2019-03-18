@@ -60,6 +60,7 @@ def company_preview():
 
     if form.validate_on_submit():
         try:
+            #check on this
             company = Company(name=form.data['name'], portfolio_id=form.data['portfolios'], symbol=form.data['symbol'])
             db.session.add(company)
             db.session.commit()
@@ -68,7 +69,7 @@ def company_preview():
             db.session.rollback()
             return render_template('/company/search.html', form=form)
 
-        return redirect(url_for('company/portfolio.html'))
+        return redirect(url_for('.portfolio'))
 
     return render_template(
         'company/preview.html',
@@ -86,13 +87,10 @@ def portfolio():
     """
 
     form = PortfolioCreateForm()
-
+    
     if form.validate_on_submit():
         try:
-
-            print('------------------------')
-
-            portfolio = Portfolio(name=form.data['name'], user_id=session ['user_id'])
+            portfolio = Portfolio(name=form.data['name'], user_id=g.user.id)
 
             db.session.add(portfolio)
             db.session.commit()

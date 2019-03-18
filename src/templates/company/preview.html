@@ -5,7 +5,7 @@
   <p>Company: {{ name }}</p>
   <p>Symbol: {{ symbol }}</p>
 
-  <form action="{{ url_for(".portfolio") }}" method="POST">
+  <form action="{{ url_for(".company_preview") }}" method="POST">
     {{ form.hidden_tag() }}
     <div class="hidden" hidden>
       {{ form.name.label }}{{ form.name(size=20) }}
